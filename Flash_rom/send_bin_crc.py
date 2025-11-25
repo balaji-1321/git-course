@@ -26,3 +26,27 @@ ser.write(crc.to_bytes(4, byteorder="little"))
 
 print("File + CRC sent")
 ser.close()
+
+
+
+# 1️⃣ You open TeraTerm
+
+# → Press 1
+# → STM32 prints: SEND FILE NOW
+
+# 2️⃣ CLOSE TeraTerm
+
+# (Important: only ONE program can use the UART!)
+
+# 3️⃣ Run Python script
+
+# → It opens COM6
+# → Sends .bin
+# → Sends CRC
+# → Closes port
+
+# 4️⃣ STM32 receives everything
+
+# → stores firmware at address 0x08008000
+# → validates CRC
+# → boots new firmware on next reset
