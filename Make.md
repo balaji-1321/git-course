@@ -232,3 +232,126 @@ Never invent missing connections.
 If evidence is insufficient, return UNKNOWN instead of guessing.
 
 Always prioritize graph topology over image appearance.
+=========================
+FINAL MATRIX GENERATION
+=========================
+
+After identifying the Segment and Digit for every LED, generate a complete LED matrix.
+
+Rules
+
+1. Rows represent Segments.
+2. Columns represent Digits.
+3. Every LED occupies exactly one cell.
+4. If an LED connects Segment Sx and Digit Dy, place "X" in that cell.
+5. If no LED exists, leave the cell blank.
+6. Sort Segments alphabetically or numerically.
+7. Sort Digits numerically.
+8. Every LED must appear exactly once in the matrix.
+9. Do not duplicate LEDs.
+10. If Segment or Digit is UNKNOWN, leave the corresponding cell blank and report the LED separately.
+
+Example
+
+          DIG1   DIG2   DIG3   DIG4
+SEG_A       X      X             X
+SEG_B              X      X
+SEG_C       X                    X
+SEG_D                     X
+
+=========================
+EXCEL TABLE GENERATION
+=========================
+
+Generate an Excel-ready table.
+
+Columns
+
+LED_ID
+Reference
+Segment
+Digit
+Segment_Net
+Digit_Net
+Segment_Resistor
+Digit_Resistor
+Trace_Path
+Confidence
+
+Each row represents one LED.
+
+Trace_Path must contain the complete electrical path from the LED to the Segment and Digit buses.
+
+Example
+
+LED12
+D12
+SEG_A
+DIG3
+NET_SEG_A
+NET_DIG3
+R15
+R41
+LED12_PIN1 → WIRE23 → R15 → WIRE41 → SEG_A | LED12_PIN2 → WIRE52 → R41 → DIG3
+98
+
+=========================
+CSV OUTPUT
+=========================
+
+Also generate CSV-compatible data.
+
+Example
+
+LED_ID,Reference,Segment,Digit,Segment_Net,Digit_Net,Segment_Resistor,Digit_Resistor,Confidence
+
+=========================
+VALIDATION
+=========================
+
+Before returning the result, verify:
+
+✓ Every LED has exactly one Segment.
+✓ Every LED has exactly one Digit.
+✓ Every matrix cell corresponds to one LED.
+✓ Every LED appears once in the Excel table.
+✓ Matrix and Excel table contain identical connectivity.
+✓ Segment and Digit names are consistent throughout.
+✓ Confidence is calculated for every LED.
+✓ If any connection cannot be proven from the graph, return UNKNOWN instead of guessing.
+
+=========================
+FINAL OUTPUT
+=========================
+
+Return only valid JSON in this format:
+
+{
+  "segments": [...],
+  "digits": [...],
+  "matrix": [
+    ["", "DIG1", "DIG2", "DIG3"],
+    ["SEG_A", "X", "", "X"],
+    ["SEG_B", "", "X", ""]
+  ],
+  "excel": [
+    {
+      "LED_ID": "LED12",
+      "Reference": "D12",
+      "Segment": "SEG_A",
+      "Digit": "DIG3",
+      "Segment_Net": "NET_SEG_A",
+      "Digit_Net": "NET_DIG3",
+      "Segment_Resistor": "R15",
+      "Digit_Resistor": "R41",
+      "Trace_Path": "...",
+      "Confidence": 98
+    }
+  ],
+  "csv": "...",
+  "unknown": [...]
+}
+
+Never output explanations.
+Never output Markdown.
+Never output text outside the JSON.
